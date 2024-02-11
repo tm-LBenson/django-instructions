@@ -22,65 +22,87 @@
     </div>
     <div class="content">
         <h1>Building RESTful APIs with Django</h1>
-
+        
         <h2>Initial Setup</h2>
-        <p>Before starting, ensure Django is installed. Then, install Django REST Framework:</p>
-        <pre><code>pip install django djangorestframework</code></pre>
+        <p>Ensure Django is installed and create a new project if you haven't already. Then, install Django REST Framework:</p>
+        <pre><code>pip install djangorestframework</code></pre>
         <p>Add 'rest_framework' to your INSTALLED_APPS in <code>settings.py</code>:</p>
         <pre><code>INSTALLED_APPS = [
     ...
     'rest_framework',
 ]</code></pre>
 
-        <h2>Using Function-Based Views (FBV) for APIs</h2>
-        <p>Here's how to handle GET and POST requests with FBVs:</p>
+        <h2>Creating a Simple User Model</h2>
+        <p>Define a User model in <code>models.py</code>:</p>
+        <pre><code>from django.db import models
+
+class User(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)</code></pre>
+
+        <h2>Creating Serializers</h2>
+        <p>Serializers allow complex data such as Django model instances to be converted into Python datatypes that can be easily rendered into JSON. Create a UserSerializer in <code>serializers.py</code>:</p>
+        <pre><code>from rest_framework import serializers
+from .models import User
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'</code></pre>
+
+        <h2>Function-Based Views (FBV)</h2>
+        <p>Start with a simple FBV to understand handling requests and responses in Django:</p>
         <pre><code>from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from .models import MyModel
+from django.views.decorators.csrf import csrf_exempt
+from .models import User
+from .serializers import UserSerializer
+from rest_framework.parsers import JSONParser
 
-@require_http_methods(["GET", "POST"])
-def my_model_list(request):
+@csrf_exempt
+def user_list(request):
     if request.method == 'GET':
-        data = list(MyModel.objects.values())
-        return JsonResponse(data, safe=False)
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return JsonResponse(serializer.data, safe=False)
     elif request.method == 'POST':
-        # Logic to create an item
-        return JsonResponse({"message": "Item created"}, status=201)</code></pre>
-        
+        data = JSONParser().parse(request)
+        serializer = UserSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)</code></pre>
+
         <h2>Transitioning to Django REST Framework</h2>
-        <p>DRF simplifies API creation, providing serialization and request handling:</p>
+        <p>DRF offers a more structured approach with class-based views for handling CRUD operations. Here's how to implement the same user list functionality with DRF:</p>
+        <pre><code>from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import User
+from .serializers import UserSerializer
 
-        <h3>GET Request Endpoint with DRF</h3>
-        <pre><code>from rest_framework.generics import ListAPIView
-from .models import MyModel
-from .serializers import MyModelSerializer
+class UserList(APIView):
+    def get(self, request, format=None):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
 
-class MyModelListView(ListAPIView):
-    queryset = MyModel.objects.all()
-    serializer_class = MyModelSerializer</code></pre>
-
-        <h3>Comprehensive Endpoint with DRF</h3>
-        <pre><code>from rest_framework.generics import RetrieveUpdateDestroyAPIView
-from .models import MyModel
-from .serializers import MyModelSerializer
-
-class MyModelDetail(RetrieveUpdateDestroyAPIView):
-    queryset = MyModel.objects.all()
-    serializer_class = MyModelSerializer</code></pre>
+    def post(self, request, format=None):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)</code></pre>
 
         <h2>URL Configuration</h2>
-        <p>Add your views to the <code>urls.py</code> of your app:</p>
+        <p>Finally, configure URLs to connect requests to the appropriate views. Update your app's <code>urls.py</code>:</p>
         <pre><code>from django.urls import path
-from . import views
+from .views import UserList
 
 urlpatterns = [
-    path('api/my-model/', views.MyModelListView.as_view(), name='my-model-list'),
-    path('api/my-model/detail/<int:pk>/', views.MyModelDetail.as_view(), name='my-model-detail'),
-    # For FBV
-    path('api/fbv/my-model/', views.my_model_list, name='fbv-my-model-list'),
+    path('users/', UserList.as_view(), name='user-list'),
 ]</code></pre>
 
-        <p>This setup provides a foundation for building APIs with Django, using both function-based views and Django REST Framework's class-based views for more complex applications.</p>
+        <p>This guide provides a step-by-step approach to building a basic RESTful API in Django, starting from function-based views and transitioning to a more structured approach with Django REST Framework.</p>
     </div>
 </main>
 <script src="injectCopyButtons.js"></script>
