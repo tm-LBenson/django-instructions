@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setting Up Models in Django</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="grid-container">
+    <div class="sidebar">
+        <h2>Guide Contents</h2>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="views_guide.html">Creating Views</a></li>
+                <li><a href="models_guide.html">Setting Up Models</a></li>
+                <li><a href="serializers_guide.html">Understanding Serializers</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="content">
+        <h1>Setting Up Models in Django</h1>
+        <p>Models in Django are Python classes that define the structure of your database. Each model is a subclass of <code>django.db.models.Model</code> and represents a database table. Models include fields that represent columns in the database table.</p>
+        
+        <h2>Defining a Model</h2>
+        <p>Here's an example of a simple model:</p>
+        <pre><code>from django.db import models
+
+class Post(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    published_date = models.DateTimeField(auto_now_add=True)</code></pre>
+        
+        <p>This model defines a <code>Post</code> with a title, content, and publication date. The <code>CharField</code> and <code>TextField</code> are types of fields that map to the database's varchar and text types, respectively.</p>
+        
+        <h2>Migrations</h2>
+        <p>After defining your models, you need to create migrations to apply changes to your database schema:</p>
+        <pre><code>python manage.py makemigrations
+python manage.py migrate</code></pre>
+
+        <p>Migrations are Django's way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema. They're designed to be human-readable and version controlled.</p>
+        
+        <h2>Using Models in Views</h2>
+        <p>Once your models are set up, you can use them in your views to query the database:</p>
+        <pre><code>from django.shortcuts import render
+from .models import Post
+
+def post_list(request):
+    posts = Post.objects.all()
+    return render(request, 'myapp/post_list.html', {'posts': posts})</code></pre>
+
+        <p>This view queries all posts from the <code>Post</code> model and passes them to the <code>post_list.html</code> template.</p>
+    </div>
+</div>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
