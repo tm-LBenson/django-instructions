@@ -13,9 +13,10 @@
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
-                <li><a href="views_guide.html">Creating Views</a></li>
+                <li><a href="views_guide.html" class="active">Creating Views</a></li>
                 <li><a href="models_guide.html">Setting Up Models</a></li>
                 <li><a href="serializers_guide.html">Understanding Serializers</a></li>
+                <li><a href="url_configuration.html">URL Configuration</a></li> <!-- Consider adding this for detailed URL configs -->
             </ul>
         </nav>
     </div>
@@ -41,14 +42,14 @@ class MyListView(ListView):
         <h2>URL Configuration</h2>
         <p>To make a view accessible through the web, you must map it to a URL. In your Django app, modify the <code>urls.py</code> file to include your view:</p>
         <pre><code>from django.urls import path
-from .views import my_view, MyListView
+from . import views
 
 urlpatterns = [
-    path('', my_view, name='home'),
-    path('list/', MyListView.as_view(), name='my-list-view'),
+    path('', views.my_view, name='home'),
+    path('list/', views.MyListView.as_view(), name='my-list-view'),
 ]</code></pre>
 
-        <p>With these configurations, Django knows how to route incoming web requests to the appropriate view based on the requested URL.</p>
+        <p>With these configurations, Django knows how to route incoming web requests to the appropriate view based on the requested URL. Remember, having a <code>urls.py</code> in both your project's main directory and in each app directory is recommended to maintain a clear and efficient URL structure.</p>
     </div>
 </main>
 <script src="injectCopyButtons.js"></script>
