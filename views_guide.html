@@ -16,7 +16,7 @@
                 <li><a href="views_guide.html" class="active">Creating Views</a></li>
                 <li><a href="models_guide.html">Setting Up Models</a></li>
                 <li><a href="serializers_guide.html">Understanding Serializers</a></li>
-                <li><a href="url_configuration.html">URL Configuration</a></li> <!-- Consider adding this for detailed URL configs -->
+                <li><a href="url_configuration.html">URL Configuration</a></li>
             </ul>
         </nav>
     </div>
@@ -39,8 +39,8 @@ from .models import MyModel
 class MyListView(ListView):
     model = MyModel</code></pre>
 
-        <h2>URL Configuration</h2>
-        <p>To make a view accessible through the web, you must map it to a URL. In your Django app, modify the <code>urls.py</code> file to include your view:</p>
+        <h2>URL Configuration in Your App</h2>
+        <p>To make a view accessible through the web, you must map it to a URL within your app. Here is how you modify the <code>urls.py</code> file in your app to include your view:</p>
         <pre><code>from django.urls import path
 from . import views
 
@@ -49,7 +49,16 @@ urlpatterns = [
     path('list/', views.MyListView.as_view(), name='my-list-view'),
 ]</code></pre>
 
-        <p>With these configurations, Django knows how to route incoming web requests to the appropriate view based on the requested URL. Remember, having a <code>urls.py</code> in both your project's main directory and in each app directory is recommended to maintain a clear and efficient URL structure.</p>
+        <h2>Incorporating App URLs into Your Project</h2>
+        <p>After setting up your app's <code>urls.py</code>, you need to include these URLs in the project's main <code>urls.py</code> file. This step is crucial for integrating your app with the project. Add a reference to your app's URL configuration using Django's <code>include</code> function:</p>
+        <pre><code>from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('your-app-path/', include('your_app.urls')),
+]</code></pre>
+        <p>This configuration tells Django to include the URLs defined in <code>your_app.urls</code> under the specified path. Replace <code>'your-app-path/'</code> with the desired path prefix for your app and <code>'your_app'</code> with the actual name of your app.</p>
     </div>
 </main>
 <script src="injectCopyButtons.js"></script>
