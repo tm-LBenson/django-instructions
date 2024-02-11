@@ -22,11 +22,35 @@
     </div>
     <div class="content">
         <h1>Building RESTful APIs with Django</h1>
+
+        <h2>Initial Setup</h2>
+        <p>Before starting, ensure Django is installed. Then, install Django REST Framework:</p>
+        <pre><code>pip install django djangorestframework</code></pre>
+        <p>Add 'rest_framework' to your INSTALLED_APPS in <code>settings.py</code>:</p>
+        <pre><code>INSTALLED_APPS = [
+    ...
+    'rest_framework',
+]</code></pre>
+
+        <h2>Using Function-Based Views (FBV) for APIs</h2>
+        <p>Here's how to handle GET and POST requests with FBVs:</p>
+        <pre><code>from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from .models import MyModel
+
+@require_http_methods(["GET", "POST"])
+def my_model_list(request):
+    if request.method == 'GET':
+        data = list(MyModel.objects.values())
+        return JsonResponse(data, safe=False)
+    elif request.method == 'POST':
+        # Logic to create an item
+        return JsonResponse({"message": "Item created"}, status=201)</code></pre>
         
-        <h2>Expanded View Examples</h2>
-        
-        <h3>GET Request Endpoint</h3>
-        <p>This view handles GET requests for fetching all instances of <code>MyModel</code>.</p>
+        <h2>Transitioning to Django REST Framework</h2>
+        <p>DRF simplifies API creation, providing serialization and request handling:</p>
+
+        <h3>GET Request Endpoint with DRF</h3>
         <pre><code>from rest_framework.generics import ListAPIView
 from .models import MyModel
 from .serializers import MyModelSerializer
@@ -34,19 +58,8 @@ from .serializers import MyModelSerializer
 class MyModelListView(ListAPIView):
     queryset = MyModel.objects.all()
     serializer_class = MyModelSerializer</code></pre>
-        
-        <h3>GET and POST Request Endpoint</h3>
-        <p>This view can handle both GET requests to list instances and POST requests to create a new instance of <code>MyModel</code>.</p>
-        <pre><code>from rest_framework.generics import ListCreateAPIView
-from .models import MyModel
-from .serializers import MyModelSerializer
 
-class MyModelListCreateView(ListCreateAPIView):
-    queryset = MyModel.objects.all()
-    serializer_class = MyModelSerializer</code></pre>
-        
-        <h3>GET, POST, PUT, and DELETE Endpoint</h3>
-        <p>This view supports GET for retrieving, POST for creating, PUT for updating, and DELETE for deleting instances of <code>MyModel</code>.</p>
+        <h3>Comprehensive Endpoint with DRF</h3>
         <pre><code>from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from .models import MyModel
 from .serializers import MyModelSerializer
@@ -54,19 +67,20 @@ from .serializers import MyModelSerializer
 class MyModelDetail(RetrieveUpdateDestroyAPIView):
     queryset = MyModel.objects.all()
     serializer_class = MyModelSerializer</code></pre>
-        
-        <h2>URL Configuration for Expanded Examples</h2>
-        <p>Finally, ensure your <code>urls.py</code> maps URLs to these new views:</p>
+
+        <h2>URL Configuration</h2>
+        <p>Add your views to the <code>urls.py</code> of your app:</p>
         <pre><code>from django.urls import path
-from .views import MyModelListView, MyModelListCreateView, MyModelDetail
+from . import views
 
 urlpatterns = [
-    path('api/my-model/', MyModelListView.as_view(), name='my-model-list'),
-    path('api/my-model/create/', MyModelListCreateView.as_view(), name='my-model-create'),
-    path('api/my-model/detail/<int:pk>/', MyModelDetail.as_view(), name='my-model-detail'),
+    path('api/my-model/', views.MyModelListView.as_view(), name='my-model-list'),
+    path('api/my-model/detail/<int:pk>/', views.MyModelDetail.as_view(), name='my-model-detail'),
+    # For FBV
+    path('api/fbv/my-model/', views.my_model_list, name='fbv-my-model-list'),
 ]</code></pre>
-        
-        <p>These examples showcase different ways to set up your API endpoints to handle various HTTP methods, allowing for a flexible and powerful API design.</p>
+
+        <p>This setup provides a foundation for building APIs with Django, using both function-based views and Django REST Framework's class-based views for more complex applications.</p>
     </div>
 </main>
 <script src="injectCopyButtons.js"></script>
