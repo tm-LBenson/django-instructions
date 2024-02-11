@@ -23,47 +23,50 @@
     <div class="content">
         <h1>Building RESTful APIs with Django</h1>
         
-        <h2>Introduction to Django REST Framework</h2>
-        <p>Django REST Framework (DRF) is a powerful toolkit for building Web APIs. It provides tools for serializing data, handling requests, and formatting responses.</p>
+        <h2>Expanded View Examples</h2>
         
-        <h2>Setting Up Django REST Framework</h2>
-        <p>First, install DRF using pip:</p>
-        <pre><code>pip install djangorestframework</code></pre>
-        <p>Then, add 'rest_framework' to your INSTALLED_APPS in <code>settings.py</code>.</p>
-        
-        <h2>Creating Serializers</h2>
-        <p>Serializers allow complex data to be converted into Python datatypes that can then be easily rendered into JSON. Define a serializer for your models:</p>
-        <pre><code>from rest_framework import serializers
-from .models import MyModel
-
-class MyModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MyModel
-        fields = '__all__'</code></pre>
-        
-        <h2>Building API Views</h2>
-        <p>Create views that can handle REST operations. DRF supports function-based views and class-based views. Here's an example of a class-based view for a model:</p>
-        <pre><code>from rest_framework.views import APIView
-from rest_framework.response import Response
+        <h3>GET Request Endpoint</h3>
+        <p>This view handles GET requests for fetching all instances of <code>MyModel</code>.</p>
+        <pre><code>from rest_framework.generics import ListAPIView
 from .models import MyModel
 from .serializers import MyModelSerializer
 
-class MyModelList(APIView):
-    def get(self, request):
-        items = MyModel.objects.all()
-        serializer = MyModelSerializer(items, many=True)
-        return Response(serializer.data)</code></pre>
+class MyModelListView(ListAPIView):
+    queryset = MyModel.objects.all()
+    serializer_class = MyModelSerializer</code></pre>
         
-        <h2>URL Configuration for APIs</h2>
-        <p>Map URLs to your API views in <code>urls.py</code>:</p>
+        <h3>GET and POST Request Endpoint</h3>
+        <p>This view can handle both GET requests to list instances and POST requests to create a new instance of <code>MyModel</code>.</p>
+        <pre><code>from rest_framework.generics import ListCreateAPIView
+from .models import MyModel
+from .serializers import MyModelSerializer
+
+class MyModelListCreateView(ListCreateAPIView):
+    queryset = MyModel.objects.all()
+    serializer_class = MyModelSerializer</code></pre>
+        
+        <h3>GET, POST, PUT, and DELETE Endpoint</h3>
+        <p>This view supports GET for retrieving, POST for creating, PUT for updating, and DELETE for deleting instances of <code>MyModel</code>.</p>
+        <pre><code>from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from .models import MyModel
+from .serializers import MyModelSerializer
+
+class MyModelDetail(RetrieveUpdateDestroyAPIView):
+    queryset = MyModel.objects.all()
+    serializer_class = MyModelSerializer</code></pre>
+        
+        <h2>URL Configuration for Expanded Examples</h2>
+        <p>Finally, ensure your <code>urls.py</code> maps URLs to these new views:</p>
         <pre><code>from django.urls import path
-from .views import MyModelList
+from .views import MyModelListView, MyModelListCreateView, MyModelDetail
 
 urlpatterns = [
-    path('api/my-model/', MyModelList.as_view(), name='my-model-list'),
+    path('api/my-model/', MyModelListView.as_view(), name='my-model-list'),
+    path('api/my-model/create/', MyModelListCreateView.as_view(), name='my-model-create'),
+    path('api/my-model/detail/<int:pk>/', MyModelDetail.as_view(), name='my-model-detail'),
 ]</code></pre>
         
-        <p>This guide outlines the basics of setting up a RESTful API with Django and Django REST Framework. For more detailed information, consult the official DRF documentation.</p>
+        <p>These examples showcase different ways to set up your API endpoints to handle various HTTP methods, allowing for a flexible and powerful API design.</p>
     </div>
 </main>
 <script src="injectCopyButtons.js"></script>
