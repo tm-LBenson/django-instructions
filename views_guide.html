@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creating Views in Django</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="grid-container">
+    <div class="sidebar">
+        <h2>Guide Contents</h2>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="views_guide.html">Creating Views</a></li>
+                <li><a href="models_guide.html">Setting Up Models</a></li>
+                <li><a href="serializers_guide.html">Understanding Serializers</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="content">
+        <h1>Creating Views in Django</h1>
+        <p>Views in Django are Python functions or classes that receive web requests and return web responses. Views access data through models and delegate formatting to the templates.</p>
+        
+        <h2>Function-Based Views</h2>
+        <p>Function-based views are simple Python functions that take a web request and return a web response. Here's an example:</p>
+        <pre><code>from django.http import HttpResponse
+
+def my_view(request):
+    return HttpResponse('Hello, World!')</code></pre>
+
+        <h2>Class-Based Views</h2>
+        <p>Class-based views provide an object-oriented approach to views. They allow you to organize your views and reuse code by inheriting from Django's generic views. Example:</p>
+        <pre><code>from django.views.generic import ListView
+from .models import MyModel
+
+class MyListView(ListView):
+    model = MyModel</code></pre>
+
+        <h2>URL Configuration</h2>
+        <p>To make a view accessible through the web, you must map it to a URL. In your Django app, modify the <code>urls.py</code> file to include your view:</p>
+        <pre><code>from django.urls import path
+from .views import my_view, MyListView
+
+urlpatterns = [
+    path('', my_view, name='home'),
+    path('list/', MyListView.as_view(), name='my-list-view'),
+]</code></pre>
+
+        <p>With these configurations, Django knows how to route incoming web requests to the appropriate view based on the requested URL.</p>
+    </div>
+</div>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
