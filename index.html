@@ -29,44 +29,58 @@
 <div class="container">
     <h1 class="mb-4">Django Project Setup and Deployment Guide</h1>
     
-    <!-- Step 1: Install Django -->
+    <!-- Step 1: Create and Activate Virtual Environment -->
     <div class="step">
-        <h2>Step 1: Install Django</h2>
-        <p>First, install Django using pip:</p>
+        <h2>Step 1: Create and Activate Virtual Environment</h2>
+        <p>Before installing Django, it's recommended to create a virtual environment. Install <code>virtualenv</code> if you haven't already:</p>
+        <pre><code>pip install virtualenv</code></pre>
+        <p>Create a new virtual environment named <code>NameofEnv</code>:</p>
+        <pre><code>virtualenv NameofEnv</code></pre>
+        <p>Activate the virtual environment:</p>
+        <p>On Windows:</p>
+        <pre><code>NameofEnv\Scripts\activate</code></pre>
+        <p>On MacOS/Linux:</p>
+        <pre><code>source NameofEnv/bin/activate</code></pre>
+    </div>
+    
+    <!-- Step 2: Install Django -->
+    <div class="step">
+        <h2>Step 2: Install Django</h2>
+        <p>Install Django using pip:</p>
         <pre><code>pip install django</code></pre>
     </div>
     
-    <!-- Step 2: Create a Django Project -->
+    <!-- Step 3: Create a Django Project -->
     <div class="step">
-        <h2>Step 2: Create a Django Project</h2>
+        <h2>Step 3: Create a Django Project</h2>
         <p>Create a new project by running:</p>
         <pre><code>django-admin startproject myproject</code></pre>
         <p>This command creates a <code>myproject</code> directory in your current directory.</p>
     </div>
     
-    <!-- Step 3: Navigate to Your Project -->
+    <!-- Step 4: Navigate to Your Project -->
     <div class="step">
-        <h2>Step 3: Navigate to Your Project</h2>
+        <h2>Step 4: Navigate to Your Project</h2>
         <p>Change into your project directory:</p>
         <pre><code>cd myproject</code></pre>
     </div>
     
-    <!-- Step 4: Create a Django App -->
+    <!-- Step 5: Create a Django App -->
     <div class="step">
-        <h2>Step 4: Create a Django App</h2>
+        <h2>Step 5: Create a Django App</h2>
         <p>Create an app within your project:</p>
         <pre><code>python manage.py startapp myapp</code></pre>
     </div>
     
-    <!-- Step 5: Define Your App's Models -->
+    <!-- Step 6: Define Your App's Models -->
     <div class="step">
-        <h2>Step 5: Define Your App's Models</h2>
+        <h2>Step 6: Define Your App's Models</h2>
         <p>Models are Python classes that define the structure of your application's data. Open the <code>models.py</code> file in your app's directory and define your models.</p>
     </div>
     
-    <!-- Step 6: Register Your App -->
+    <!-- Step 7: Register Your App -->
     <div class="step">
-        <h2>Step 6: Register Your App</h2>
+        <h2>Step 7: Register Your App</h2>
         <p>In the <code>settings.py</code> file of your project (located in the <code>myproject/myproject</code> directory), add your app to the <code>INSTALLED_APPS</code> list to include it in your project.</p>
         <pre><code>INSTALLED_APPS = [
     ...
@@ -74,30 +88,30 @@
 ]</code></pre>
     </div>
     
-    <!-- Step 7: Migrate the Database -->
+    <!-- Step 8: Migrate the Database -->
     <div class="step">
-        <h2>Step 7: Migrate the Database</h2>
+        <h2>Step 8: Migrate the Database</h2>
         <p>Run the following command to apply migrations:</p>
         <pre><code>python manage.py migrate</code></pre>
     </div>
     
-    <!-- Step 8: Create Superuser -->
+    <!-- Step 9: Create Superuser -->
     <div class="step">
-        <h2>Step 8: Create Superuser</h2>
+        <h2>Step 9: Create Superuser</h2>
         <p>Create an administrative user for the admin site:</p>
         <pre><code>python manage.py createsuperuser</code></pre>
     </div>
     
-    <!-- Step 9: Run the Development Server -->
+    <!-- Step 10: Run the Development Server -->
     <div class="step">
-        <h2>Step 9: Run the Development Server</h2>
+        <h2>Step 10: Run the Development Server</h2>
         <p>Start the development server to see your project in action:</p>
         <pre><code>python manage.py runserver</code></pre>
     </div>
     
-    <!-- Step 10: Include Your App in the Project URLs -->
+    <!-- Step 11: Include Your App in the Project URLs -->
     <div class="step">
-        <h2>Step 10: Include Your App in the Project URLs</h2>
+        <h2>Step 11: Include Your App in the Project URLs</h2>
         <p>Make your app accessible through the web by including it in your project's URL patterns. In the <code>urls.py</code> file of your project, include the URL configurations of your app:</p>
         <pre><code>from django.urls import include, path
 
@@ -128,4 +142,5 @@ urlpatterns = [
 </div>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
