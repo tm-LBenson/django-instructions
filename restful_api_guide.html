@@ -6,12 +6,11 @@
     <title>Building RESTful APIs with Django</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
 </head>
 <body>
 <main class="grid-container">
     <div class="sidebar">
-        <h2>API Guide Contents</h2>
+        <h2>Guide Contents</h2>
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -19,6 +18,7 @@
                 <li><a href="views_guide.html">Creating Views</a></li>
                 <li><a href="models_guide.html">Setting Up Models</a></li>
                 <li><a href="serializers_guide.html">Understanding Serializers</a></li>
+                <li><a href="deployment.html">Deployment</a></li>
             </ul>
         </nav>
     </div>
@@ -26,16 +26,12 @@
         <h1>Building RESTful APIs with Django</h1>
         
         <h2>Initial Setup</h2>
-        <p>Ensure Django is installed and create a new project if you haven't already. Then, install Django REST Framework:</p>
-        <pre><code>pip install djangorestframework</code></pre>
-        <p>Add 'rest_framework' to your INSTALLED_APPS in <code>settings.py</code>:</p>
-        <pre><code>INSTALLED_APPS = [
-    ...
-    'rest_framework',
-]</code></pre>
+        <p>Before diving into creating your API, ensure Django and Django REST Framework are installed:</p>
+        <pre><code>pip install django djangorestframework</code></pre>
+        <p>Add 'rest_framework' to your INSTALLED_APPS in <code>settings.py</code> to enable DRF in your project.</p>
 
-        <h2>Creating a Simple User Model</h2>
-        <p>Define a User model in <code>models.py</code>:</p>
+        <h2>Creating a User Model</h2>
+        <p>Start by defining a simple User model in your app's <code>models.py</code>. This model will represent the users in your API:</p>
         <pre><code>from django.db import models
 
 class User(models.Model):
@@ -43,7 +39,7 @@ class User(models.Model):
     email = models.EmailField(unique=True)</code></pre>
 
         <h2>Creating Serializers</h2>
-        <p>Serializers allow complex data such as Django model instances to be converted into Python datatypes that can be easily rendered into JSON. Create a UserSerializer in <code>serializers.py</code>:</p>
+        <p>Serializers convert complex data types to Python data types that can then be easily rendered into JSON, XML, or other content types. Create a <code>UserSerializer</code> in a new file named <code>serializers.py</code> within your app:</p>
         <pre><code>from rest_framework import serializers
 from .models import User
 
@@ -52,30 +48,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'</code></pre>
 
-        <h2>Function-Based Views (FBV)</h2>
-        <p>Start with a simple FBV to understand handling requests and responses in Django:</p>
-        <pre><code>from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import User
-from .serializers import UserSerializer
-from rest_framework.parsers import JSONParser
-
-@csrf_exempt
-def user_list(request):
-    if request.method == 'GET':
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = UserSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)</code></pre>
-
-        <h2>Transitioning to Django REST Framework</h2>
-        <p>DRF offers a more structured approach with class-based views for handling CRUD operations. Here's how to implement the same user list functionality with DRF:</p>
+        <h2>Writing Views</h2>
+        <p>Views handle the logic of your API. Use DRF's views to manage CRUD operations for your User model. Here's an example using <code>APIView</code> for listing and creating users:</p>
         <pre><code>from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -95,38 +69,25 @@ class UserList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)</code></pre>
 
-        <h2>Configuring URLs</h2>
-        <p>To enable your API endpoints, you need to configure URLs in both your Django app and the project's main directory.</p>
-
-        <h3>App URL Configuration</h3>
-        <p>Create a <code>urls.py</code> in your app directory if it doesn't already exist, and define URLs for your views:</p>
+        <h2>URL Configuration</h2>
+        <p>Connect your views to URLs. First, create a <code>urls.py</code> in your app directory:</p>
         <pre><code>from django.urls import path
 from .views import UserList
 
 urlpatterns = [
     path('users/', UserList.as_view(), name='user-list'),
 ]</code></pre>
-        <p>This file maps the <code>/users/</code> path to the <code>UserList</code> view.</p>
-
-        <h3>Project URL Configuration</h3>
-        <p>In your project's <code>urls.py</code> (located in the same directory as <code>settings.py</code>), include the app's URL configuration:</p>
-        <pre><code>from django.contrib import admin
-from django.urls import path, include
+        <p>Then, ensure your project's <code>urls.py</code> includes your app's URLs:</p>
+        <pre><code>from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('your_app_name.urls')),
+    path('api/', include('your_app.urls')),
 ]</code></pre>
-        <p>Replace <code>'your_app_name'</code> with the actual name of your app. This step makes the app's endpoints accessible under the <code>/api/</code> path, so the full path to the users list would be <code>/api/users/</code>.</p>
 
         <h2>Testing with Postman</h2>
-        <p>Once you've completed these steps, you can use Postman to interact with your API:</p>
-        <ul>
-            <li>To list users or add a new user, send a GET or POST request to <code>/api/users/</code>.</li>
-            <li>For retrieving, updating, or deleting a specific user, send a GET, PUT, or DELETE request to <code>/api/users/&lt;id&gt;/</code>, replacing <code>&lt;id&gt;</code> with the user's ID.</li>
-        </ul>
+        <p>With your API now set up, you can use Postman to send requests and receive responses. Test your endpoints to ensure they're working as expected. For creating a new user, send a POST request to <code>/api/users/</code> with a JSON body containing the user's name and email.</p>
 
-        <p>This guide provides the steps to build and configure a RESTful API in Django, enabling you to manage a fake users dataset and interact with it using tools like Postman.</p>
+        <p>This guide has walked you through setting up a basic RESTful API with Django REST Framework. Explore further to add more features like authentication, permissions, and more complex data models to your API.</p>
     </div>
 </main>
 <script src="injectCopyButtons.js"></script>
