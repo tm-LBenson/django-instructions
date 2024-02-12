@@ -95,16 +95,38 @@ class UserList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)</code></pre>
 
-        <h2>URL Configuration</h2>
-        <p>Finally, configure URLs to connect requests to the appropriate views. Update your app's <code>urls.py</code>:</p>
+        <h2>Configuring URLs</h2>
+        <p>To enable your API endpoints, you need to configure URLs in both your Django app and the project's main directory.</p>
+
+        <h3>App URL Configuration</h3>
+        <p>Create a <code>urls.py</code> in your app directory if it doesn't already exist, and define URLs for your views:</p>
         <pre><code>from django.urls import path
 from .views import UserList
 
 urlpatterns = [
     path('users/', UserList.as_view(), name='user-list'),
 ]</code></pre>
+        <p>This file maps the <code>/users/</code> path to the <code>UserList</code> view.</p>
 
-        <p>This guide provides a step-by-step approach to building a basic RESTful API in Django, starting from function-based views and transitioning to a more structured approach with Django REST Framework.</p>
+        <h3>Project URL Configuration</h3>
+        <p>In your project's <code>urls.py</code> (located in the same directory as <code>settings.py</code>), include the app's URL configuration:</p>
+        <pre><code>from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include('your_app_name.urls')),
+]</code></pre>
+        <p>Replace <code>'your_app_name'</code> with the actual name of your app. This step makes the app's endpoints accessible under the <code>/api/</code> path, so the full path to the users list would be <code>/api/users/</code>.</p>
+
+        <h2>Testing with Postman</h2>
+        <p>Once you've completed these steps, you can use Postman to interact with your API:</p>
+        <ul>
+            <li>To list users or add a new user, send a GET or POST request to <code>/api/users/</code>.</li>
+            <li>For retrieving, updating, or deleting a specific user, send a GET, PUT, or DELETE request to <code>/api/users/&lt;id&gt;/</code>, replacing <code>&lt;id&gt;</code> with the user's ID.</li>
+        </ul>
+
+        <p>This guide provides the steps to build and configure a RESTful API in Django, enabling you to manage a fake users dataset and interact with it using tools like Postman.</p>
     </div>
 </main>
 <script src="injectCopyButtons.js"></script>
