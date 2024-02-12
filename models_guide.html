@@ -6,7 +6,6 @@
     <title>Setting Up Models in Django</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
 </head>
 <body>
 <main class="grid-container">
@@ -19,41 +18,66 @@
                 <li><a href="views_guide.html">Creating Views</a></li>
                 <li><a href="models_guide.html" class="active">Setting Up Models</a></li>
                 <li><a href="serializers_guide.html">Understanding Serializers</a></li>
+                <li><a href="deployment.html">Deployment</a></li>
             </ul>
         </nav>
     </div>
     <div class="content">
         <h1>Setting Up Models in Django</h1>
-        <p>Models in Django are Python classes that define the structure of your database. Each model is a subclass of <code>django.db.models.Model</code> and represents a database table. Models include fields that represent columns in the database table.</p>
+        <p>Models are the blueprint of your database. They define the fields and behaviors of the data you’re storing. Django follows the DRY Principle. The goal is to define your data model in one place and automatically derive things from it.</p>
         
-        <h2>Defining a Model</h2>
-        <p>Here's an example of a simple model:</p>
+        <h2>Basic Model Definition</h2>
+        <p>Defining a model in Django is as simple as defining a class that inherits from <code>django.db.models.Model</code>:</p>
         <pre><code>from django.db import models
 
 class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)</code></pre>
+        <p>This <code>Post</code> model has three fields: <code>title</code>, <code>content</code>, and <code>published_date</code>. Django automatically generates a database schema from these model definitions.</p>
         
-        <p>This model defines a <code>Post</code> with a title, content, and publication date. The <code>CharField</code> and <code>TextField</code> are types of fields that map to the database's varchar and text types, respectively.</p>
+        <h2>Model Fields and Relationships</h2>
+        <p>Django offers a variety of field types and relationship fields (ForeignKey, ManyToManyField, and OneToOneField) to model complex database structures:</p>
+        <pre><code>class Author(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+
+class Book(models.Model):
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    synopsis = models.TextField()</code></pre>
+        <p>Here, a <code>Book</code> is related to an <code>Author</code> model, which showcases a simple ForeignKey relationship.</p>
         
         <h2>Migrations</h2>
-        <p>After defining your models, you need to create migrations to apply changes to your database schema:</p>
+        <p>Changes to models require creating migrations and applying them:</p>
         <pre><code>python manage.py makemigrations
 python manage.py migrate</code></pre>
-
-        <p>Migrations are Django's way of propagating changes you make to your models (adding a field, deleting a model, etc.) into your database schema. They're designed to be human-readable and version controlled.</p>
+        <p>Migrations are Django's way to propagate model changes into the database schema.</p>
         
         <h2>Using Models in Views</h2>
-        <p>Once your models are set up, you can use them in your views to query the database:</p>
+        <p>Models are typically used in views to query the database:</p>
         <pre><code>from django.shortcuts import render
 from .models import Post
 
 def post_list(request):
     posts = Post.objects.all()
-    return render(request, 'myapp/post_list.html', {'posts': posts})</code></pre>
+    return render(request, 'post_list.html', {'posts': posts})</code></pre>
+        <p>This view fetches all posts from the database and passes them to a template.</p>
+        
+        <h2>Model Inheritance</h2>
+        <p>Django also supports model inheritance, allowing you to base one model on another:</p>
+        <pre><code>class BasePost(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
 
-        <p>This view queries all posts from the <code>Post</code> model and passes them to the <code>post_list.html</code> template.</p>
+    class Meta:
+        abstract = True
+
+class SpecialPost(BasePost):
+    special_feature = models.CharField(max_length=100)</code></pre>
+        <p>The <code>BasePost</code> serves as an abstract base class for <code>SpecialPost</code>, which adds additional fields.</p>
+        
+        <p>Models are a crucial part of any Django application, enabling structured and efficient data storage and retrieval. By understanding how to define and use models, you're well on your way to building robust Django applications.</p>
     </div>
 </main>
 <script src="injectCopyButtons.js"></script>
