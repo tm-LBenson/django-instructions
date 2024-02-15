@@ -37,7 +37,7 @@
         <p>Before deploying, make sure your project is ready:</p>
         <ol>
             <li>Create a <code>requirements.txt</code> file that lists all the Python packages your app needs. Run <code>pip freeze > requirements.txt</code> in your project directory.</li>
-            <li>Add Gunicorn to your <code>requirements.txt</code> file, as Render uses it to serve Django projects. Simply add <code>gunicorn</code> to the file.</li>
+            <li>Add Gunicorn to your <code>requirements.txt</code> file, as Render uses it to serve Django projects. Simply add <code>gunicorn==20.1.0</code> to the file.(or find the latest version)</li>
             <li>Ensure your project's settings are production-ready, especially <code>DEBUG</code> (should be set to <code>False</code>) and <code>ALLOWED_HOSTS</code> (should include your Render.com domain).</li>
         </ol>
         
