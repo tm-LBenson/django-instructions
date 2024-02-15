@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build a Simple HTMX + Django Todo App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+<div class="grid-container">
+    <div class="sidebar">
+        <h2>Guide Contents</h2>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="restful_api_guide.html">RESTful API Guide</a></li>
+                <li><a href="views_guide.html">Creating Views</a></li>
+                <li><a href="models_guide.html">Setting Up Models</a></li>
+                <li><a href="serializers_guide.html">Understanding Serializers</a></li>
+                <li><a href="deployment.html">Deployment</a></li>
+                <li><a href="htmx.html" class="active">HTMX Framework</a></li>
+            </ul>
+        </nav>
+    </div>
+    <main class="content">
+        <h1>HTMX + Django Todo App Guide</h1>
 
+        <div class="step">
+            <h2>Step 1: Setup Your Django App</h2>
+            <p>Following the home page guide, create your Django project and app. We'll name our app <code>todoapp</code> for this guide.</p>
+        </div>
+
+        <div class="step">
+            <h2>Step 2: Define Your Todo Model</h2>
+            <p>In <code>todoapp/models.py</code>, define a simple Todo model:</p>
+            <pre><code>from django.db import models
+
+class Todo(models.Model):
+    title = models.CharField(max_length=100)
+    completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title</code></pre>
+            <p>Run <code>python manage.py makemigrations</code> and <code>python manage.py migrate</code> to apply these changes.</p>
+        </div>
+
+        <div class="step">
+            <h2>Step 3: Create Views for Your Todo Items</h2>
+            <p>In <code>todoapp/views.py</code>, add views to handle creating, listing, and deleting todos. We'll use HTMX to interact with these views:</p>
+            <pre><code>from django.http import HttpResponse
+from .models import Todo
+
+def list_todos(request):
+    todos = Todo.objects.all()
+    todos_html = ''.join([f"&lt;div&gt;{todo.title} - {'Done' if todo.completed else 'Not Done'}&lt;/div&gt;" for todo in todos])
+    return HttpResponse(todos_html)
+
+def add_todo(request):
+    title = request.POST.get('title')
+    Todo.objects.create(title=title)
+    return list_todos(request)
+
+def delete_todo(request, todo_id):
+    Todo.objects.get(id=todo_id).delete()
+    return list_todos(request)</code></pre>
+        </div>
+
+        <div class="step">
+            <h2>Step 4: Configure URLs</h2>
+            <p>In <code>todoapp/urls.py</code>, set up paths for your views:</p>
+            <pre><code>from django.urls import path
+from .views import list_todos, add_todo, delete_todo
+
+urlpatterns = [
+    path('', list_todos, name='list_todos'),
+    path('add/', add_todo, name='add_todo'),
+    path('delete/&lt;int:todo_id&gt;/', delete_todo, name='delete_todo'),
+]</code></pre>
+        </div>
+
+        <div class="step">
+            <h2>Step 5: Integrate HTMX</h2>
+            <p>Install HTMX by adding it to your base template. Create a simple form to add todos and use HTMX to submit it asynchronously:</p>
+            <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Todo App&lt;/title&gt;
+    &lt;script src="https://unpkg.com/htmx.org/dist/htmx.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form method="post" hx-post="/add/" hx-target="#todos" hx-swap="outerHTML"&gt;
+        &lt;input type="text" name="title" /&gt;
+        &lt;button type="submit"&gt;Add Todo&lt;/button&gt;
+    &lt;/form&gt;
+    &lt;div id="todos"&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            <p>For CSRF protection, ensure your Django settings include middleware to set CSRF tokens in your forms when using HTMX.</p>
+        </div>
+
+        <div class="step">
+            <h2>Step 6: Run Your Server</h2>
+            <p>Use <code>python manage.py runserver</code> to start your development server and test the HTMX interactions with your Django backend.</p>
+        </div>
+
+    </main>
+</div>
+<script src="injectCopyButtons.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
