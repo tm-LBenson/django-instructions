@@ -29,12 +29,12 @@
         <div class="step">
             <h2>Step 1: Create and Activate Virtual Environment</h2>
             <p>Virtual environments allow you to manage separate package installations for different projects. Creating a virtual environment for your Django project ensures that dependencies are isolated and manageable. Here's how to set one up:</p>
-            <pre><code>pip install virtualenv
-virtualenv NameofEnv
-# Windows
-NameofEnv\Scripts\activate
-# MacOS/Linux
-source NameofEnv/bin/activate</code></pre>
+        <pre>
+            <code>
+            python3 -m venv venv
+            source venv/bin/activate
+            </code>
+        </pre>
         </div>
         <div class="step">
             <h2>Step 2: Install Django</h2>
